@@ -6,6 +6,8 @@ from sklearn.cross_validation import train_test_split
 from sklearn.metrics import accuracy_score,confusion_matrix,roc_curve,auc
 from TechnicalAnalysis import *
 from matplotlib import pyplot as plt
+from DataVisualization import *
+from ANN import *
 
 def sign(x):
 	if x >= 0:
@@ -19,7 +21,7 @@ def getData(CSVFile):
 	data = data[::-1]
 	ohclv_data = np.c_[data['Open'],data['High'],data['Low'],data['Close'],data['Volume']]
 	smoothened_ohclv_data = pandas.stats.moments.ewma(ohclv_data,span = 20)
-	return smoothened_ohclv_data
+	return  smoothened_ohclv_data
 
 def getTechnicalIndicators(X,d):
 
@@ -54,7 +56,6 @@ def prepareData(X,d):
 	y = map(sign, y1 - y0)
 	return feature_matrix,y
 	
-
 def main():
 	CSVFile = raw_input("Enter the CSV File: ")
 	Trading_Day = input("Enter the Trading Day: ")
@@ -63,15 +64,13 @@ def main():
 	Xtrain,Xtest,ytrain,ytest = train_test_split(X,y)
 	model = RandomForestClassifier(n_estimators = 30,criterion = "entropy")
 	model.fit(Xtrain,ytrain)
+
+	#model = NeuralNetwork(Xtrain,ytrain)
+	#model.fit(0.0,0.0001)
 	y_pred = model.predict(Xtest)
 	print "The accuracy is",accuracy_score(ytest,y_pred)*100,"%"
 	print confusion_matrix(ytest,y_pred)
-	fpr,tpr,thresholds = roc_curve(ytest,y_pred)
-	plt.plot(fpr,tpr,"r")
-	plt.plot([0,1],[0,1],"r--")
-	plt.xlabel("False Positive Rate")
-	plt.ylabel("True Positive Rate")
-	plt.show()
+	DrawConvexHull(X,y)
 
 main()
 
