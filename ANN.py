@@ -4,7 +4,7 @@ import numpy as np
 
 class NeuralNetwork(object):
 
-	def __init__(self, input, target,activation = T.tanh):
+	def __init__(self, input, target,activation = T.nnet.sigmoid):
 
 		self.input = input
 		self.target = target
@@ -13,7 +13,7 @@ class NeuralNetwork(object):
 		rng = np.random.RandomState(1234)
 
 		n_in1 = n_features
-		n_out1 = 30
+		n_out1 = 100
 
 		W1_values= np.array( 
 						rng.uniform(
@@ -36,7 +36,18 @@ class NeuralNetwork(object):
 
 		self.out1 = activation(T.dot(self.X,self.W1) + self.b1)
 
-		W2_values = np.zeros((n_out1,n_target))
+		W2_values= np.array( 
+						rng.uniform(
+						low  = -np.sqrt(6./(n_in1 + n_out1)),
+						high = np.sqrt(6./(n_in1 + n_out1)),
+						size = (n_out1,n_target)
+
+					)
+				
+			)
+
+		if activation == T.nnet.sigmoid:
+			W2_values *= 4
 
 		self.W2 = theano.shared(value = W2_values, name ="W2", borrow = True)
 		self.b2 = theano.shared(value = np.zeros((n_target,)), name = "b2",borrow = True)
@@ -74,7 +85,8 @@ class NeuralNetwork(object):
 
 		learning_steps = 10000
 
-		for i in xrange(learning_steps):
+		for i in xrange(1,learning_steps+1):
+			print i/float(learning_steps) * 100," % complete"
 			train(self.input,self.target)
 
 	def predict(self, test_data):

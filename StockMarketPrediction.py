@@ -9,18 +9,37 @@ from matplotlib import pyplot as plt
 from DataVisualization import *
 from ANN import *
 
+
 def sign(x):
 	if x >= 0:
 		return 1
 	else:
 		return 0
 
+def ES(x,alpha):
+	
+	ft = x[0]
+	f = [ft]
+	n = x.shape[0]
+	for i in xrange(1,n):
+		ft_1 = alpha * x[i] + (1 - alpha) * ft
+		f.append(ft_1)
+		ft = ft_1
+	f = np.array(f)
+	mse = ((x - f)**2).mean(axis = 0)
+	print "The mse is",mse
+	return f
+	
+	
+	
+	
 def getData(CSVFile):
 
 	data = pandas.read_csv(CSVFile)
 	data = data[::-1]
 	ohclv_data = np.c_[data['Open'],data['High'],data['Low'],data['Close'],data['Volume']]
-	smoothened_ohclv_data = pandas.stats.moments.ewma(ohclv_data,span = 20)
+	#smoothened_ohclv_data = pandas.stats.moments.ewma(ohclv_data,span = 20)
+	smoothened_ohclv_data = ES(ohclv_data,0.15)
 	return  smoothened_ohclv_data
 
 def getTechnicalIndicators(X,d):
@@ -54,7 +73,7 @@ def prepareData(X,d):
 	y0 = X[:,3][:num_samples - d]
 	y1 = X[:,3][d:]
 	y = map(sign, y1 - y0)
-	return feature_matrix,y
+	return feature_matrix,np.array(y)
 	
 def main():
 	CSVFile = raw_input("Enter the CSV File: ")
@@ -64,14 +83,12 @@ def main():
 	Xtrain,Xtest,ytrain,ytest = train_test_split(X,y)
 	model = RandomForestClassifier(n_estimators = 30,criterion = "entropy")
 	model.fit(Xtrain,ytrain)
-
-	#model = NeuralNetwork(Xtrain,ytrain)
-	#model.fit(0.0,0.0001)
+#	model = NeuralNetwork(Xtrain,ytrain)
+#	model.fit(0.0,0.0001)
 	y_pred = model.predict(Xtest)
 	print "The accuracy is",accuracy_score(ytest,y_pred)*100,"%"
 	print confusion_matrix(ytest,y_pred)
-	DrawConvexHull(X,y)
-
+	#DrawConvexHull(X,y)
 main()
 
 	

@@ -1,5 +1,5 @@
 from ANN import *
-from sklearn.datasets import load_digits as load_iris
+from sklearn.datasets import  load_iris
 from sklearn.cross_validation import train_test_split
 from sklearn.metrics import accuracy_score
 from sklearn.svm import SVC
