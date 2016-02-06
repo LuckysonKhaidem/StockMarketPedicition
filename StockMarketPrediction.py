@@ -53,7 +53,7 @@ def prepareData(X,d):
 	feature_matrix = feature_matrix[:num_samples -d]
 	y0 = X[:,3][:num_samples - d]
 	y1 = X[:,3][d:]
-	y = map(sign, y1 - y0)
+	y = np.array(map(sign, y1 - y0))
 	return feature_matrix,y
 	
 def main():
@@ -64,7 +64,9 @@ def main():
 	Xtrain,Xtest,ytrain,ytest = train_test_split(X,y)
 	model = RandomForestClassifier(n_estimators = 30,criterion = "entropy")
 	model.fit(Xtrain,ytrain)
-
+	print "The feature Matix ",Xtrain
+	print "The class labels ",ytrain
+	exit()
 	#model = NeuralNetwork(Xtrain,ytrain)
 	#model.fit(0.0,0.0001)
 	y_pred = model.predict(Xtest)
