@@ -8,12 +8,14 @@ def SegragateData(X,y):
 	n = len(y)
 	X0 = []
 	X1 = []
+
 	for i in xrange(n):
 		if y[i] == 0:
 			X0.append(X[i])
 
 		else:
 			X1.append(X[i])
+
 	return np.array(X0),np.array(X1)
 
 def ScatterPlot(X,y):
@@ -22,10 +24,9 @@ def ScatterPlot(X,y):
 	pca.fit(X)
 	pca = pca.transform(X)
 	plt.scatter(pca[:,0],pca[:,1],c = y)
-	plt.show()
 
 def DrawConvexHull(X,y):
-
+	ScatterPlot(X,y)
 	pca = PCA(n_components = 2)
 	pca.fit(X)
 	X = pca.transform(X)
@@ -43,4 +44,3 @@ def DrawROC(Ytest,Y_pred):
 	plt.xlabel("False Positive Rate")
 	plt.ylabel("True Positive Rate")
 	plt.show()
-		
