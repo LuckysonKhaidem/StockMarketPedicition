@@ -50,7 +50,8 @@ def getRSI(x):
         RSI = 100 -(100/(1+RS))
         return RSI
 
-def getStochasticOscillator(x):	
+def getStochasticOscillator(x):
+
 	high = x[:,1].squeeze()
 	low = x[:,2].squeeze()
 	close = x[:,3].squeeze()
@@ -66,6 +67,7 @@ def getStochasticOscillator(x):
 	return k
 
 def getWilliams(x):
+
 	high = x[:,1].squeeze()
         low = x[:,2].squeeze()
         close = x[:,3].squeeze()
@@ -81,11 +83,13 @@ def getWilliams(x):
         return w
 
 def getMACD(close):
+
         ma1 = ema(close.squeeze(),12)
         ma2 = ema(close.squeeze(),26)
         return ma1[14:] - ma2
 
 def getPriceRateOfChange(close,n_days):
+
         close = close.squeeze()
         n = len(close)
         x0 = close[:n-n_days]
@@ -94,6 +98,7 @@ def getPriceRateOfChange(close,n_days):
         return PriceRateOfChange
 
 def getOnBalanceVolume(X):
+        
         close = X[:,3].squeeze()
         volume = X[:,4].squeeze()[1:]
         n = len(close)
