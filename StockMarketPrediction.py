@@ -1,13 +1,13 @@
 import pandas
 import numpy as np
-from sklearn.ensemble import RandomForestClassifier
+#from sklearn.ensemble import RandomForestClassifier
 from sklearn.preprocessing import normalize
 from sklearn.cross_validation import train_test_split
 from sklearn.metrics import roc_curve,auc
 from TechnicalAnalysis import *
 from matplotlib import pyplot as plt
 from DataVisualization import *
-
+from RF import RF
 def sign(x):
 	if x >= 0:
 		return 0
@@ -111,8 +111,9 @@ def main():
 	Trading_Day = input("Enter the Trading Day: ")
 	ohclv_data = getData(CSVFile)
 	X,y = prepareData(ohclv_data, Trading_Day)
+	print X.shape
 	Xtrain,Xtest,ytrain,ytest = train_test_split(X,y)
-	model = RandomForestClassifier(n_estimators = 30,criterion = "entropy")
+	model = RF.RandomForestClassifier(n_estimators = 30,criterion = "gini")
 	model.fit(Xtrain,ytrain)
 
 	y_pred = model.predict(Xtest)
