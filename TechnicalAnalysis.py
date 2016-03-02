@@ -48,7 +48,8 @@ def getRSI(x):
         avgLoss = np.array(avgLoss)
 	RS = avgGain/avgLoss
         RSI = 100 -(100/(1+RS))
-        return RSI
+        print RSI.shape,x1[13:].shape
+        return np.c_[RSI,x1[13:]]
 
 def getStochasticOscillator(x):
 
@@ -64,7 +65,8 @@ def getStochasticOscillator(x):
 	highestHigh = np.array(highestHigh)
 	lowestLow = np.array(lowestLow)
 	k = 100*((close[13:]-lowestLow)/(highestHigh-lowestLow))
-	return k
+        print k.shape,close[13:].shape
+	return np.c_[k,close[13:]]
 
 def getWilliams(x):
 
@@ -80,13 +82,16 @@ def getWilliams(x):
         highestHigh = np.array(highestHigh)
         lowestLow = np.array(lowestLow)
         w = -100*((highestHigh-close[13:])/(highestHigh-lowestLow))
-        return w
+        print w.shape, close[13:].shape
+        return np.c_[w,close[13:]]
 
 def getMACD(close):
 
         ma1 = ema(close.squeeze(),12)
         ma2 = ema(close.squeeze(),26)
-        return ma1[14:] - ma2
+        macd =  ma1[14:] - ma2
+        print macd.shape
+        return np.c_[macd,close[len(close) - len(macd):]]
 
 def getPriceRateOfChange(close,n_days):
 
@@ -95,7 +100,8 @@ def getPriceRateOfChange(close,n_days):
         x0 = close[:n-n_days]
         x1 = close[n_days:]
         PriceRateOfChange = (x1 - x0)/x0
-        return PriceRateOfChange
+        print PriceRateOfChange.shape,x1.shape
+        return np.c_[PriceRateOfChange,x1]
 
 def getOnBalanceVolume(X):
         
@@ -117,8 +123,9 @@ def getOnBalanceVolume(X):
                         current_OBV = prev_OBV
                 OBV.append(current_OBV)
                 prev_OBV = current_OBV
-
-        return OBV
+        OBV = np.array(OBV)        
+        print OBV.shape,x1.shape
+        return np.c_[OBV,x1]
 
 
 

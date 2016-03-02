@@ -1,18 +1,18 @@
 import pandas
 import numpy as np
-#from sklearn.ensemble import RandomForestClassifier
+from sklearn.ensemble import RandomForestClassifier
 from sklearn.preprocessing import normalize
 from sklearn.cross_validation import train_test_split
 from sklearn.metrics import roc_curve,auc
 from TechnicalAnalysis import *
 from matplotlib import pyplot as plt
 from DataVisualization import *
-from RF import RF
+#from RF import RF
 def sign(x):
 	if x >= 0:
-		return 0
-	else:
 		return 1
+	else:
+		return 0
 
 def ES(x,alpha):
 	
@@ -44,6 +44,8 @@ def getTechnicalIndicators(X,d):
 	RSI = getRSI(X[:,3])
 	StochasticOscillator = getStochasticOscillator(X)
 	Williams = getWilliams(X)
+
+	
 	MACD = getMACD(X[:,3])
 	PROC = getPriceRateOfChange(X[:,3],d)
 	OBV = getOnBalanceVolume(X)
@@ -61,31 +63,36 @@ def getTechnicalIndicators(X,d):
 	MACD = MACD[len(MACD) - min_len:]
 	PROC = PROC[len(PROC) - min_len:]
 	OBV = OBV[len(OBV) - min_len:]
+	close = RSI[:,1]
 
-	feature_matrix = np.c_[RSI,
-						   StochasticOscillator,
-						   Williams,
-						   MACD,
-						   PROC,
-						   OBV]
+	feature_matrix = np.c_[RSI[:,0],
+						   StochasticOscillator[:,0],
+						   Williams[:,0],
+						   MACD[:,0],
+						   PROC[:,0],
+						   OBV[:,0],
+						   close]
 
 	return feature_matrix
 
 def prepareData(X,d):
 
 	feature_matrix = getTechnicalIndicators(X,d)
-	n_sample, n_features = X.shape
-	num_samples, n_features = feature_matrix.shape
-	X = X[n_sample - num_samples:]
-	feature_matrix = feature_matrix[:num_samples -d]
-	y0 = X[:,3][:num_samples - d]
-	y1 = X[:,3][d:]
-	y = np.array(map(sign, y1 - y0))
-	#y = np.sign(y1 - y0)
+	num_samples = feature_matrix.shape[0]
+	y0 = feature_matrix[:,-1][:num_samples-d]
+	y1 = feature_matrix[:,-1][d:]
+	print y0.shape,y1.shape
+	feature_matrix = feature_matrix[:num_samples-d]
+	
+	
+	y = np.sign(y1 - y0)
+
 	return feature_matrix,y
 
 def accuracy_score(ytest,y_pred):
 
+	ytest = np.array(ytest)
+	y_pred = np.array(y_pred)
 	ytest = ytest.squeeze()
 	y_pred = y_pred.squeeze()
 	matched_index = np.where(ytest == y_pred)
@@ -111,16 +118,18 @@ def main():
 	Trading_Day = input("Enter the Trading Day: ")
 	ohclv_data = getData(CSVFile)
 	X,y = prepareData(ohclv_data, Trading_Day)
-	print X.shape
 	Xtrain,Xtest,ytrain,ytest = train_test_split(X,y)
-	model = RF.RandomForestClassifier(n_estimators = 30,criterion = "gini")
-	model.fit(Xtrain,ytrain)
+	model = RandomForestClassifier(n_estimators = 30,criterion = "gini")
+	model.fit(Xtrain[:,range(6)],ytrain)
 
-	y_pred = model.predict(Xtest)
+	y_pred = model.predict(Xtest[:,range(6)])
 	print "The accuracy is",accuracy_score(ytest,y_pred),"%"
-	print confusion_matrix(ytest,y_pred)
-	#DrawConvexHull(Xtest,ytest)
 
+	
+	 
+	for i in range(1000,2000):
+		pred = model.predict(X[:,range(6)][i].reshape(1,-1))
+		print X[i][6], X[i+Trading_Day][6],pred,y[i]
 main()
 
 	
