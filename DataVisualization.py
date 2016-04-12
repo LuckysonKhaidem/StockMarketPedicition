@@ -3,6 +3,7 @@ from sklearn.decomposition import PCA
 from scipy.spatial import ConvexHull
 import numpy as np
 from mpl_toolkits.mplot3d import Axes3D
+from sklearn.metrics import roc_curve
 
 def SegragateData(X,y):
 	
@@ -56,8 +57,10 @@ def DrawConvexHull(X,y):
 	#plt.plot(X_1,Y_1,"b")
 	#plt.show()
 
-def DrawROC(Ytest,Y_pred):
+def DrawROC(ytest,y_pred):
 	fpr,tpr,thresholds = roc_curve(ytest,y_pred)
+	data = np.c_[fpr,tpr]
+	np.savetxt("roc1.csv",data,delimiter = ",")
 	plt.plot(fpr,tpr,"r")
 	plt.plot([0,1],[0,1],"r--")
 	plt.xlabel("False Positive Rate")
